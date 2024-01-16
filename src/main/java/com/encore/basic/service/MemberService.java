@@ -3,14 +3,15 @@ package com.encore.basic.service;
 import com.encore.basic.domain.Member;
 import com.encore.basic.domain.MemberRequestDto;
 import com.encore.basic.domain.MemberResponseDto;
-import com.encore.basic.repository.MemberRepository;
-import com.encore.basic.repository.MemoryMemberRepository;
+import com.encore.basic.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.NoSuchElementException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 //service 어노테이션을 통해 싱글톤 컴포넌트로 생성 -> Spring Bean으로 등록
 @Service
@@ -18,22 +19,25 @@ import java.util.List;
 //제어의 역전 (Inversion of Control) -> IOC 컨테이너가 Spring Bean을 관리 (빈 생성, 의존성 주입)
 public class MemberService {
 //    @Autowired // automatic dependency injection
-//    private MemoryMemberRepository memoryMemberRepository;
 
+
+//    private final MemberRepository memberRepository;
+//private final MemberRepository memberRepository;
     private final MemberRepository memberRepository;
 
+
     @Autowired
-    public MemberService(MemoryMemberRepository memoryMemberRepository) {
-        this.memberRepository = memoryMemberRepository;
+    public MemberService(MybatisMemberRepository springDataJpaMemberRepository) {
+        this.memberRepository = springDataJpaMemberRepository;
     }
 
-    static int total_id;
 
-    public List<MemberResponseDto> members() {
-        List<Member> members = memberRepository.members();
+
+    public List<MemberResponseDto> findAll() {
+        List<Member> members = memberRepository.findAll();
         List<MemberResponseDto> memberResponseDtos = new ArrayList<>();
         for (Member m : members) {
-            MemberResponseDto memberResponseDto = new MemberResponseDto(m.getId(), m.getName(), m.getEmail(), m.getPassword());
+            MemberResponseDto memberResponseDto = new MemberResponseDto(m.getId(), m.getName(), m.getEmail(), m.getPassword(), m.getCreated_time());
 //            memberResponseDto.setName(m.getName());
 //            memberResponseDto.setEmail(m.getEmail());
 //            memberResponseDto.setPassword(m.getPassword());
@@ -43,16 +47,31 @@ public class MemberService {
     }
 
     public void createMember(MemberRequestDto memberRequestDto) {
-        LocalDateTime now = LocalDateTime.now();
-        total_id++;
-        Member member = new Member(total_id, memberRequestDto.getName(),
-                memberRequestDto.getEmail(), memberRequestDto.getPassword(), now);
-        memberRepository.createMember(member);
+
+        Member member = new Member(memberRequestDto.getName(),
+                memberRequestDto.getEmail(), memberRequestDto.getPassword());
+        memberRepository.save(member);
     }
 
-    public MemberResponseDto findOne(int id) {
-        Member m = memberRepository.findOne(id);
-        MemberResponseDto memberResponseDto = new MemberResponseDto(m.getId(), m.getName(), m.getEmail(), m.getPassword());
-        return memberResponseDto;
-    }
+//    public void createMember(MemberRequestDto memberRequestDto) {
+//        LocalDateTime now = LocalDateTime.now();
+//        total_id++;
+//        Member member = new Member(total_id, memberRequestDto.getName(),
+//                memberRequestDto.getEmail(), memberRequestDto.getPassword(), now);
+//        memberRepository.save(member);
+//    }
+
+//    public MemberResponseDto findById(int id) throws NoSuchElementException
+// /*Member = memberRepository.findById(id).orElseThrow(NoSuchElementException::new);*/
+// /*Member = memberRepository.findById(id).orElseThrow(NoSuchElementException::new);*/
+public MemberResponseDto findById(int id) {
+    return memberRepository.findById(id)
+            .map(member -> new MemberResponseDto(
+                    member.getId(),
+                    member.getName(),
+                    member.getEmail(),
+                    member.getPassword(),
+                    member.getCreated_time()))
+            .orElseThrow(NoSuchElementException::new); // Optional이 비었을 때 NoSuchElementException을 발생시킴
+}
 }
