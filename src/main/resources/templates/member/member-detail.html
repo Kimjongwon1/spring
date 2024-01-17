@@ -2,10 +2,16 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Member Detail</title>
+    <title>상세보기</title>
+    <style>
+        #update-form{
+            display:none;
+        }
+    </style>
 </head>
 <body>
 <h1>상세보기</h1>
+<div th:replace="member/header :: headerFragment"></div>
 <p>
     Name : <span th:text="${member.name}"></span>
 </p>
@@ -19,5 +25,31 @@
 <p>
     Creat_time : <span th:text="${member.created_time}"></span>
 </p>
+<button onclick="update()">수정</button> <td><a th:href="@{/member/delete(id=${member.id})}"><button>삭제</button></a></td>
+<div id="update-form">
+<form action="/member/update" method="post">
+    <p>
+        Name <input type="text" name="id" th:value="${member.id}" readonly>
+    </p>
+    <p>
+        Name <input type="text" name="name" th:value="${member.name}">
+    </p>
+    <p>
+        Email <input type="text" name="email" th:value="${member.email}" readonly><br>
+    </p>
+    <p>
+        Password <input type="text" name="password" th:value="${member.password}"><br>
+    </p>
+    <p>
+        <input type="submit" value="수정완료">
+    </p>
+</form>
+</div>
+<script>
+    function update() {
+     document.getElementById('update-form').style.display = 'block';
+ }
+
+</script>
 </body>
 </html>

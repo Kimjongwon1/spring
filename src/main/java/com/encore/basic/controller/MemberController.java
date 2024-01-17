@@ -1,16 +1,15 @@
 package com.encore.basic.controller;
 
+import com.encore.basic.domain.Member;
 import com.encore.basic.domain.MemberRequestDto;
 import com.encore.basic.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.NoSuchElementException;
 
 @Controller
@@ -60,6 +59,12 @@ public class MemberController {
 
     @PostMapping("member/create")
     public String createMember(MemberRequestDto memberRequestDto) {
+//        try {
+//            memberService.createMember(memberRequestDto);
+//            return "redirect:/members"; //url 리다이렉트
+//        }catch (IllegalArgumentException e){
+//            return "404-error-page";
+//        }
         memberService.createMember(memberRequestDto);
         return "redirect:/members"; //url 리다이렉트
     }
@@ -69,10 +74,28 @@ public class MemberController {
         try{
             model.addAttribute("member", memberService.findById(id));
             return "member/member-detail";
-        }catch (NoSuchElementException e){
+        }catch (EntityNotFoundException e){
             return "404-error-page";
         }
 
     }
+    @GetMapping("member/delete")
+    public String delete(@RequestParam(value = "id") int memberId){
+        memberService.delete(memberId);
+        return "redirect:/members";
+    }
+
+    @PostMapping("member/update")
+    public String updateMember(MemberRequestDto memberRequestDto) {
+//        try {
+//            memberService.createMember(memberRequestDto);
+//            return "redirect:/members"; //url 리다이렉트
+//        }catch (IllegalArgumentException e){
+//            return "404-error-page";
+//        }
+        memberService.updateMember(memberRequestDto);
+        return "redirect:/member/find?id="+memberRequestDto.getId(); //url 리다이렉트
+    }
+
 
 }

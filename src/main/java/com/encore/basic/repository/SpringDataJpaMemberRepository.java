@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 //구현 클래스와 스펙은 simpleJpaRepository class에 있고
 //실질적인 구동상황에서 hibernate 구현체에 동작을 위임한다
 public interface SpringDataJpaMemberRepository extends MemberRepository, JpaRepository<Member, Integer> {
+
 }

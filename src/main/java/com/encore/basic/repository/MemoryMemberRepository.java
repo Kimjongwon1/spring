@@ -1,6 +1,7 @@
 package com.encore.basic.repository;
 
 import com.encore.basic.domain.Member;
+import com.encore.basic.domain.MemberRequestDto;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -43,4 +44,12 @@ public class MemoryMemberRepository implements MemberRepository {
         }
         return null;
     }
+
+    @Override
+    public void delete(Member member) {
+
+    }
+
+
+
 }

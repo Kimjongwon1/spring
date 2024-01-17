@@ -37,7 +37,10 @@ spring:
 #     update 옵션은 변경사항만 alter를 적용
 #     validate는 실제DB와의 차이를 check
 #     실무에서는 update 또는 validate 사용
-      ddl-auto: create
+      ddl-auto: update
 #     jpa가 자동으로 쿼리를 실행 할 때, 쿼리가 console창에 보여지도록
     show_sql: true
+
+mybatis:
+  mapper-locations: classpath:/mapper/**/*.xml
 

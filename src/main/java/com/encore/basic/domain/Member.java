@@ -2,7 +2,8 @@ package com.encore.basic.domain;
 
 
 import lombok.*;
-import org.springframework.cglib.core.Local;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -29,11 +30,20 @@ public class Member {
     private String password;
     @Setter
     @Column(name = "created_time") //name옵션을 통해 DB의 컬럼명 별도 지정
+    @CreationTimestamp
     private LocalDateTime created_time;
+   @UpdateTimestamp
+   private LocalDateTime updatedTime;
+
     public Member(String name,String email,String password){
         this.name = name;
         this.email = email;
         this.password = password;
         this.created_time = LocalDateTime.now();
     }
+    public void updateMember(String name, String password){
+        this.name = name;
+        this.password = password;
+    }
+
 }

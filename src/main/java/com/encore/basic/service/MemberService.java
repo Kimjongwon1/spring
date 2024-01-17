@@ -6,6 +6,9 @@ import com.encore.basic.domain.MemberResponseDto;
 import com.encore.basic.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.NoSuchElementException;
 
 import java.time.LocalDateTime;
@@ -19,15 +22,13 @@ import java.util.Optional;
 //제어의 역전 (Inversion of Control) -> IOC 컨테이너가 Spring Bean을 관리 (빈 생성, 의존성 주입)
 public class MemberService {
 //    @Autowired // automatic dependency injection
-
-
 //    private final MemberRepository memberRepository;
 //private final MemberRepository memberRepository;
     private final MemberRepository memberRepository;
 
 
     @Autowired
-    public MemberService(MybatisMemberRepository springDataJpaMemberRepository) {
+    public MemberService(SpringDataJpaMemberRepository springDataJpaMemberRepository) {
         this.memberRepository = springDataJpaMemberRepository;
     }
 
@@ -45,12 +46,21 @@ public class MemberService {
         }
         return memberResponseDtos;
     }
-
-    public void createMember(MemberRequestDto memberRequestDto) {
-
+//    transactional 어노테이션 클래스 단위로 붙이면 모든 메소드에 따라 transaction적용
+//    적용하면 메소드 단위별로 지정
+    @Transactional
+    public void createMember(MemberRequestDto memberRequestDto) throws IllegalArgumentException{
         Member member = new Member(memberRequestDto.getName(),
                 memberRequestDto.getEmail(), memberRequestDto.getPassword());
         memberRepository.save(member);
+
+//        transaction 테스트
+//        Member member = new Member(memberRequestDto.getName(), memberRequestDto.getEmail(), memberRequestDto.getPassword());
+//        memberRepository.save(member);
+//        if (member.getName().equals("kim")) {
+//            throw new IllegalArgumentException();
+//        }
+
     }
 
 //    public void createMember(MemberRequestDto memberRequestDto) {
@@ -64,7 +74,7 @@ public class MemberService {
 //    public MemberResponseDto findById(int id) throws NoSuchElementException
 // /*Member = memberRepository.findById(id).orElseThrow(NoSuchElementException::new);*/
 // /*Member = memberRepository.findById(id).orElseThrow(NoSuchElementException::new);*/
-public MemberResponseDto findById(int id) {
+public MemberResponseDto findById(int id) throws EntityNotFoundException {
     return memberRepository.findById(id)
             .map(member -> new MemberResponseDto(
                     member.getId(),
@@ -72,6 +82,22 @@ public MemberResponseDto findById(int id) {
                     member.getEmail(),
                     member.getPassword(),
                     member.getCreated_time()))
-            .orElseThrow(NoSuchElementException::new); // Optional이 비었을 때 NoSuchElementException을 발생시킴
-}
+            .orElseThrow(EntityNotFoundException::new); // Optional이 비었을 때 NoSuchElementException을 발생시킴
+    }
+    @Transactional
+    public void delete(int memberId) {
+//        Member member = memberRepository.findById(memberId)
+//                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
+//        memberRepository.delete(member);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
+        memberRepository.delete(member);
+
+    }
+
+    public void updateMember(MemberRequestDto memberRequestDto) {
+        Member member = memberRepository.findById(memberRequestDto.getId()).orElseThrow(EntityNotFoundException::new);
+        member.updateMember(memberRequestDto.getName(),memberRequestDto.getPassword());
+        memberRepository.save(member);
+    }
 }
