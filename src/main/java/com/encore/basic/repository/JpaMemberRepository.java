@@ -46,7 +46,7 @@ public class JpaMemberRepository implements MemberRepository {
     @Override
     public void delete(Member member) {
 //        remove
-        entityManager.remove(member);
+//        entityManager.remove(member);
     }
 
 

@@ -3,53 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <title>상세보기</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        #update-form{
-            display:none;
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .card-custom {
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .card-custom:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
+        }
+        .btn-custom {
+            margin: 10px 5px;
+        }
+        #update-form {
+            display: none;
+            margin-top: 20px;
+        }
+        .form-control {
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-<h1>상세보기</h1>
-<div th:replace="member/header :: headerFragment"></div>
-<p>
-    Name : <span th:text="${member.name}"></span>
-</p>
-<p>
-    Email : <span th:text="${member.email}"></span>
-</p>
-<p>
-    Password : <span th:text="${member.password}"></span>
-</p>
-
-<p>
-    Creat_time : <span th:text="${member.created_time}"></span>
-</p>
-<button onclick="update()">수정</button> <td><a th:href="@{/member/delete(id=${member.id})}"><button>삭제</button></a></td>
-<div id="update-form">
-<form action="/member/update" method="post">
-    <p>
-        Name <input type="text" name="id" th:value="${member.id}" readonly>
-    </p>
-    <p>
-        Name <input type="text" name="name" th:value="${member.name}">
-    </p>
-    <p>
-        Email <input type="text" name="email" th:value="${member.email}" readonly><br>
-    </p>
-    <p>
-        Password <input type="text" name="password" th:value="${member.password}"><br>
-    </p>
-    <p>
-        <input type="submit" value="수정완료">
-    </p>
-</form>
+<div class="container">
+    <h1 class="text-center my-4">상세보기</h1>
+    <div th:replace="member/header :: headerFragment"></div>
+    <div class="card-custom">
+        <p>Name : <span th:text="${member.name}"></span></p>
+        <p>Email : <span th:text="${member.email}"></span></p>
+        <p>Password : <span th:text="${member.password}"></span></p>
+        <p>Create Time : <span th:text="${member.created_time}"></span></p>
+        <button class="btn btn-primary btn-custom" onclick="toggleUpdateForm()">수정</button>
+        <a th:href="@{/member/delete(id=${member.id})}" class="btn btn-danger btn-custom">삭제</a>
+    </div>
+    <div id="update-form" class="card-custom">
+        <form action="/member/update" method="post" class="form-group">
+            <input type="hidden" name="id" th:value="${member.id}">
+            <p>
+                Name <input type="text" name="name" th:value="${member.name}" class="form-control">
+            </p>
+            <p>
+                Email <input type="email" name="email" th:value="${member.email}" class="form-control" readonly>
+            </p>
+            <p>
+                Password <input type="password" name="password" th:value="${member.password}" class="form-control">
+            </p>
+            <p>
+                <input type="submit" value="수정완료" class="btn btn-success">
+            </p>
+        </form>
+    </div>
 </div>
 <script>
-    function update() {
-     document.getElementById('update-form').style.display = 'block';
+    function toggleUpdateForm() {
+     var x = document.getElementById('update-form');
+     if (window.getComputedStyle(x).display === 'none') {
+         x.style.display = 'block';
+     } else {
+         x.style.display = 'none';
+     }
  }
-
 </script>
 </body>
 </html>

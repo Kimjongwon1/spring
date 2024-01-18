@@ -82,15 +82,15 @@ public MemberResponseDto findById(int id) throws EntityNotFoundException {
                     member.getEmail(),
                     member.getPassword(),
                     member.getCreated_time()))
-            .orElseThrow(EntityNotFoundException::new); // Optional이 비었을 때 NoSuchElementException을 발생시킴
+            .orElseThrow(() -> new EntityNotFoundException("검색하신 ID의 Member가 없습니다")); // Optional이 비었을 때 NoSuchElementException을 발생시킴
     }
     @Transactional
-    public void delete(int memberId) {
+    public void delete(int id) {
 //        Member member = memberRepository.findById(memberId)
 //                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
 //        memberRepository.delete(member);
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + id));
         memberRepository.delete(member);
 
     }
@@ -99,5 +99,6 @@ public MemberResponseDto findById(int id) throws EntityNotFoundException {
         Member member = memberRepository.findById(memberRequestDto.getId()).orElseThrow(EntityNotFoundException::new);
         member.updateMember(memberRequestDto.getName(),memberRequestDto.getPassword());
         memberRepository.save(member);
+
     }
 }
